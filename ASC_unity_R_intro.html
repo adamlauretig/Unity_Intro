@@ -190,7 +190,35 @@ install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; 
 source /opt/intel/bin/compilervars.sh intel64
 /usr/local/R/3.3.2/bin/Rscript ~/toy_function.R</code></pre>
 <p>where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
-<p>Under <code>#COMMANDS TO RUN</code>, <code>source /opt/intel/bin/compilervars.sh intel64</code> calls the necessary intel compiler, and <code>/usr/local/R/3.3.2/bin/Rscript</code> is the path for the <code>Rscript</code> command, to batch execute the script. Just using <code>module load intel R</code></p>
+<p>Under <code>#COMMANDS TO RUN</code>, <code>source /opt/intel/bin/compilervars.sh intel64</code> calls the necessary intel compiler, and <code>/usr/local/R/3.3.2/bin/Rscript</code> is the path for the <code>Rscript</code> command, to batch execute the script. Just using <code>module load intel R</code> in the bash script causes the cluster to throw esoteric errors. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
+<p>To write a <code>.pbs</code> file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck “hide extension,” uncheck “if no extension is provided use ‘.txt’,” and change the file extension to <code>.pbs</code>.</p>
+<p>The function we’re testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:</p>
+<pre class="r"><code>library(parallel)
+library(data.table)
+load(&quot;~/fake_data.rdata&quot;) # note that we're using short filepaths
+paste_number_letter &lt;- function(i = NULL, letter_vector = NULL){
+  data.table(paste0(letter_vector[i], &quot;_&quot;, i))
+}
+length_of_letters &lt;- length(fake_data)
+function_out &lt;- mclapply(1:length_of_letters, paste_number_letter, 
+  letter_vector = fake_data, mc.cores = 3)
+toy_dt &lt;- rbindlist(function_out)
+save(toy_dt, file = &quot;~/toy_dt.rdata&quot;)</code></pre>
+<p>where the parallel function supplies the <code>mclapply</code> function, for which, we tell it to use three cores, in <code>mc.cores</code>. The file path for loading and saving is just <code>~/</code>, since we’ll put everything in the same directory.</p>
+</div>
+<div id="uploading-files" class="section level2">
+<h2>Uploading Files</h2>
+<p>To upload our files, we’ll use the <code>scp</code> command in the terminal. This has the format <code>scp [source filepath] [target file path]</code>:</p>
+<pre class="bash"><code>scp ~/data/Unity_intro/demo_pbs.pbs username.N@unity.asc.ohio-state.edu:/home/username.N
+
+scp ~/data/Unity_intro/fake_data.rdata username.N@unity.asc.ohio-state.edu:/home/username.N
+
+scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/username.N
+</code></pre>
+<p>where <code>~/data/Unity_intro/</code> is the local path, and <code>username.N@unity.asc.ohio-state.edu:/home/username.N</code> is the path on the cluster.</p>
+</div>
+<div id="running-batch-code" class="section level2">
+<h2>Running batch code</h2>
 </div>
 
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1:ppn=3
+#PBS -N toy_bash_job
+#PBS -j oe 
+#PBS -m abe
+#PBS -M username.N@osu.edu
+
+
+#COMMANDS TO RUN
+source /opt/intel/bin/compilervars.sh intel64
+/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R
