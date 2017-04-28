@@ -133,7 +133,7 @@ $(document).ready(function () {
 <p>On a Mac, to connect to the Unity cluster, open the terminal, and type:</p>
 <pre class="bash"><code>ssh -l username.N unity.asc.ohio-state.edu
 </code></pre>
-<p>where username.N is your Ohio State name.number. You’ll be prompted for your OSU password, which you should enter. If you’re on a Windows computer, you’ll use PuTTy to connect to the Unity cluster. If you log in, you will see the following</p>
+<p>where username.N is your Ohio State name.number. You’ll be prompted for your OSU password, which you should enter. If you’re on a Windows computer, you’ll use PuTTy to connect to the Unity cluster. If you log in, you will see the following:</p>
 <pre class="bash"><code>-----------------------------------------
 Welcome to Unity.
 
@@ -149,9 +149,21 @@ or submit request to: http://go.osu.edu/unitysubmit
 
 [username.N@unity-1 ~]$ 
 </code></pre>
+<p>To list the current contents of your working directory, type:</p>
+<pre class="bash"><code>ls</code></pre>
+<p>at the prompt. We then want to know which softwares we can use, which are in <em>modules</em>. To see the modules available, type:</p>
+<pre class="bash"><code>module avail</code></pre>
+<p>and to load the R module, type:</p>
+<pre class="bash"><code>module load intel R</code></pre>
+<p>since, R depends on the intel module. To open R, type</p>
+<pre class="r"><code>R</code></pre>
+<p>which will open an R command line, from where you can, for example, install packages.</p>
+<p>and to logout, type</p>
+<pre class="bash"><code>logout</code></pre>
+<p>which will return your terminal to the original directory. Log out now, we’ll set up our code on the local computer, and then send it to the cluster for batch processing.</p>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
+<div id="setting-up-code-to-run-in-a-batch-setting" class="section level2">
+<h2>Setting up Code to run in a batch setting</h2>
 <p>You can also embed plots, for example:</p>
 <pre class="r"><code>plot(pressure)</code></pre>
 <p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>

@@ -17,7 +17,7 @@ On a Mac, to connect to the Unity cluster, open the terminal, and type:
 ssh -l username.N unity.asc.ohio-state.edu
 
 ```
-where username.N is your Ohio State name.number.  You'll be prompted for your OSU password, which you should enter. If you're on a Windows computer, you'll use PuTTy to connect to the Unity cluster.  If you log in, you will see the following 
+where username.N is your Ohio State name.number.  You'll be prompted for your OSU password, which you should enter. If you're on a Windows computer, you'll use PuTTy to connect to the Unity cluster.  If you log in, you will see the following:
 ```{bash, eval = FALSE}
 -----------------------------------------
 Welcome to Unity.
@@ -36,8 +36,34 @@ or submit request to: http://go.osu.edu/unitysubmit
 
 ```
 
+To list the current contents of your working directory, type: 
+```{bash, eval = FALSE}
+ls
+```
 
-## Including Plots
+at the prompt. We then want to know which softwares we can use, which are in *modules*.  To see the modules available, type:
+```{bash, eval = FALSE}
+module avail
+```
+
+and to load the R module, type:
+```{bash, eval = FALSE}
+module load intel R
+```
+since, R depends on the intel module. To open R, type
+```{r, eval = FALSE}
+R
+```
+which will open an R command line, from where you can, for example, install packages.  
+
+
+and to logout, type
+```{bash, eval = FALSE}
+logout
+```
+which will return your terminal to the original directory.  Log out now, we'll set up our code on the local computer, and then send it to the cluster for batch processing.
+
+## Setting up Code to run in a batch setting
 
 You can also embed plots, for example:
 
