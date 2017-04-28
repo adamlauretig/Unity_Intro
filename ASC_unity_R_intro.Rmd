@@ -36,6 +36,8 @@ or submit request to: http://go.osu.edu/unitysubmit
 
 ```
 
+
+## In the Unity Environment
 To list the current contents of your working directory, type: 
 ```{bash, eval = FALSE}
 ls
@@ -51,13 +53,27 @@ and to load the R module, type:
 module load intel R
 ```
 since, R depends on the intel module. To open R, type
-```{r, eval = FALSE}
+```{bash, eval = FALSE}
 R
 ```
-which will open an R command line, from where you can, for example, install packages.  
+which will open an R command line, from where you can, for example, install packages.  To see the currently installed packages, type:
+```{r, eval = FALSE}
+installed.packages()
+```
+which will generate a reasonably long list of installed packages.  While we're here, let's install data.table, since we'll be using it later:
+```{r, eval = FALSE}
+install.packages("data.table", repos = "http://cran.case.edu" )
+```
+This will take a few seconds, and then, you can load the data.table library, which should work:
+```{r, eval = FALSE}
+library(data.table)
+```
+This is all we'll need for now, so quit R, and don't save the workspace image:
+```{r, eval = FALSE}
+q()
+```
 
-
-and to logout, type
+Now, log out of the unity environment, and type:
 ```{bash, eval = FALSE}
 logout
 ```

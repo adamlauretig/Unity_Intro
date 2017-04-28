@@ -149,6 +149,9 @@ or submit request to: http://go.osu.edu/unitysubmit
 
 [username.N@unity-1 ~]$ 
 </code></pre>
+</div>
+<div id="in-the-unity-environment" class="section level2">
+<h2>In the Unity Environment</h2>
 <p>To list the current contents of your working directory, type:</p>
 <pre class="bash"><code>ls</code></pre>
 <p>at the prompt. We then want to know which softwares we can use, which are in <em>modules</em>. To see the modules available, type:</p>
@@ -156,9 +159,16 @@ or submit request to: http://go.osu.edu/unitysubmit
 <p>and to load the R module, type:</p>
 <pre class="bash"><code>module load intel R</code></pre>
 <p>since, R depends on the intel module. To open R, type</p>
-<pre class="r"><code>R</code></pre>
-<p>which will open an R command line, from where you can, for example, install packages.</p>
-<p>and to logout, type</p>
+<pre class="bash"><code>R</code></pre>
+<p>which will open an R command line, from where you can, for example, install packages. To see the currently installed packages, type:</p>
+<pre class="r"><code>installed.packages()</code></pre>
+<p>which will generate a reasonably long list of installed packages. While we’re here, let’s install data.table, since we’ll be using it later:</p>
+<pre class="r"><code>install.packages(&quot;data.table&quot;, repos = &quot;http://cran.case.edu&quot; )</code></pre>
+<p>This will take a few seconds, and then, you can load the data.table library, which should work:</p>
+<pre class="r"><code>library(data.table)</code></pre>
+<p>This is all we’ll need for now, so quit R, and don’t save the workspace image:</p>
+<pre class="r"><code>q()</code></pre>
+<p>Now, log out of the unity environment, and type:</p>
 <pre class="bash"><code>logout</code></pre>
 <p>which will return your terminal to the original directory. Log out now, we’ll set up our code on the local computer, and then send it to the cluster for batch processing.</p>
 </div>
