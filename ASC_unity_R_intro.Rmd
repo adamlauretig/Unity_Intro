@@ -138,5 +138,19 @@ where `~/data/Unity_intro/` is the local path, and `username.N@unity.asc.ohio-st
 
 ## Running batch code
 
-We'll now log back into the unity cluster
+We'll now log back into the unity cluster, and run our code with
+```{bash run_pbs, eval = FALSE}
+qsub demo_pbs.pbs
+```
+
+Which will email us when the job starts, and ends. If it works, `toy_dt.rdata` with appear when we type `ls`, and an output file with the job name and number will appear as well.
+
+## Download the Result
+
+To download the result back to your computer, we'll use `scp` in reverse
+```{bash scp_download, eval = FALSE}
+scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
+
+```
+which we can then open in R.
 
