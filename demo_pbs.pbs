@@ -4,9 +4,9 @@
 #PBS -N toy_bash_job
 #PBS -j oe 
 #PBS -m abe
-#PBS -M username.N@osu.edu
+#PBS -M lauretig.1@osu.edu
 
 
 #COMMANDS TO RUN
-source /opt/intel/bin/compilervars.sh intel64
-/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R
+ml intel R
+Rscript /home/lauretig.1/toy_function.R

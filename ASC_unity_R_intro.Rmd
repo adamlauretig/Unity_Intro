@@ -138,3 +138,5 @@ where `~/data/Unity_intro/` is the local path, and `username.N@unity.asc.ohio-st
 
 ## Running batch code
 
+We'll now log back into the unity cluster
+
