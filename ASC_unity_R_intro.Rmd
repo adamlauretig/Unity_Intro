@@ -1,0 +1,48 @@
+---
+title: "Introduction to R on the ASC Unity Cluster"
+author: "Adam Lauretig"
+date: "April 28, 2017"
+output: html_document
+---
+
+## ASC Unity Cluster
+
+Ohio State ASC tech has recent made the [Unity high-performance](https://osuasc.teamdynamix.com/TDClient/KB/?CategoryID=4582 "Unity") cluster available to everyone, with up to 24 cores available for your high performance computing needs.  However, access the cluster and running R code in it can be confusing for those not familiar with unix systems. To spare you 3 days of beating your head against the wall and cursing the unix gods, I've put together the following introduction to using R on the unix cluster.  In this document, I will: introduce the basics of interacting with Unity; illustrate how to load packages in the Unity environment; discuss how to write the bash files for running code to take advantage of the parallel environment; and demonstrate how to upload a file, run a batch R script, and download the results.
+
+## Connecting to the Unity cluster
+
+On a Mac, to connect to the Unity cluster, open the terminal, and type:
+
+```{bash, eval=FALSE}
+ssh -l username.N unity.asc.ohio-state.edu
+
+```
+where username.N is your Ohio State name.number.  You'll be prompted for your OSU password, which you should enter. If you're on a Windows computer, you'll use PuTTy to connect to the Unity cluster.  If you log in, you will see the following 
+```{bash, eval = FALSE}
+-----------------------------------------
+Welcome to Unity.
+
+This is a college-wide resource managed by ASCTech
+
+Information on how to use the Unity Cluster:
+http://go.osu.edu/unityhelp
+
+For assistance please email asctech@osu.edu
+or submit request to: http://go.osu.edu/unitysubmit
+-----------------------------------------
+
+
+[username.N@unity-1 ~]$ 
+
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, eval=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
