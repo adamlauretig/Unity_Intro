@@ -60,9 +60,11 @@ which will open an R command line, from where you can, for example, install pack
 ```{r, eval = FALSE}
 installed.packages()
 ```
-which will generate a reasonably long list of installed packages.  While we're here, let's install data.table, since we'll be using it later:
+which will generate a reasonably long list of installed packages.  While we're here, let's install data.table and parallel, since we'll be using them later:
 ```{r, eval = FALSE}
 install.packages("data.table", repos = "http://cran.case.edu" )
+install.packages("parallel", repos = "http://cran.case.edu" )
+
 ```
 This will take a few seconds, and then, you can load the data.table library, which should work:
 ```{r, eval = FALSE}
@@ -81,10 +83,24 @@ which will return your terminal to the original directory.  Log out now, we'll s
 
 ## Setting up Code to run in a batch setting
 
-You can also embed plots, for example:
+I've provided some sample data, and a sample script (`fake_data.rdata`, and `toy_function.R` respectively), which paste a number and letter together and save them to a data frame. To run this as a batch process, where we take advantage of the parallel computing possibilities we will need to write a `.pbs` file to schedule our job on the cluster, more details [here](https://osuasc.teamdynamix.com/TDClient/KB/ArticleDet?ID=23180 "Unity cluster") and [here](https://www.osc.edu/content/batch-tutorial "OSC tutorial").
 
-```{r pressure, eval=FALSE}
-plot(pressure)
+An example batch script would be 
+```{bash pbs_file, eval=FALSE}
+#!/bin/bash
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1:ppn=3
+#PBS -N toy_bash_job
+#PBS -j oe 
+#PBS -m abe
+#PBS -M username.N@osu.edu
+
+
+#COMMANDS TO RUN
+source /opt/intel/bin/compilervars.sh intel64
+/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R
 ```
+where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Under `#COMMANDS TO RUN`, `source /opt/intel/bin/compilervars.sh intel64` calls the necessary intel compiler, and `/usr/local/R/3.3.2/bin/Rscript` is the path for the `Rscript` command, to batch execute the script.  Just using `module load intel R`
+

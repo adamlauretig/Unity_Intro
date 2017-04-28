@@ -162,8 +162,9 @@ or submit request to: http://go.osu.edu/unitysubmit
 <pre class="bash"><code>R</code></pre>
 <p>which will open an R command line, from where you can, for example, install packages. To see the currently installed packages, type:</p>
 <pre class="r"><code>installed.packages()</code></pre>
-<p>which will generate a reasonably long list of installed packages. While we’re here, let’s install data.table, since we’ll be using it later:</p>
-<pre class="r"><code>install.packages(&quot;data.table&quot;, repos = &quot;http://cran.case.edu&quot; )</code></pre>
+<p>which will generate a reasonably long list of installed packages. While we’re here, let’s install data.table and parallel, since we’ll be using them later:</p>
+<pre class="r"><code>install.packages(&quot;data.table&quot;, repos = &quot;http://cran.case.edu&quot; )
+install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; )</code></pre>
 <p>This will take a few seconds, and then, you can load the data.table library, which should work:</p>
 <pre class="r"><code>library(data.table)</code></pre>
 <p>This is all we’ll need for now, so quit R, and don’t save the workspace image:</p>
@@ -174,9 +175,22 @@ or submit request to: http://go.osu.edu/unitysubmit
 </div>
 <div id="setting-up-code-to-run-in-a-batch-setting" class="section level2">
 <h2>Setting up Code to run in a batch setting</h2>
-<p>You can also embed plots, for example:</p>
-<pre class="r"><code>plot(pressure)</code></pre>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<p>I’ve provided some sample data, and a sample script (<code>fake_data.rdata</code>, and <code>toy_function.R</code> respectively), which paste a number and letter together and save them to a data frame. To run this as a batch process, where we take advantage of the parallel computing possibilities we will need to write a <code>.pbs</code> file to schedule our job on the cluster, more details <a href="https://osuasc.teamdynamix.com/TDClient/KB/ArticleDet?ID=23180" title="Unity cluster">here</a> and <a href="https://www.osc.edu/content/batch-tutorial" title="OSC tutorial">here</a>.</p>
+<p>An example batch script would be</p>
+<pre class="bash"><code>#!/bin/bash
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1:ppn=3
+#PBS -N toy_bash_job
+#PBS -j oe 
+#PBS -m abe
+#PBS -M username.N@osu.edu
+
+
+#COMMANDS TO RUN
+source /opt/intel/bin/compilervars.sh intel64
+/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R</code></pre>
+<p>where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
+<p>Under <code>#COMMANDS TO RUN</code>, <code>source /opt/intel/bin/compilervars.sh intel64</code> calls the necessary intel compiler, and <code>/usr/local/R/3.3.2/bin/Rscript</code> is the path for the <code>Rscript</code> command, to batch execute the script. Just using <code>module load intel R</code></p>
 </div>
 
 
