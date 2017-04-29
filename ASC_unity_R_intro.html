@@ -222,7 +222,10 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 <h2>Running batch code</h2>
 <p>We’ll now log back into the unity cluster, and run our code with</p>
 <pre class="bash"><code>qsub demo_pbs.pbs</code></pre>
-<p>Which will email us when the job starts, and ends. If it works, <code>toy_dt.rdata</code> with appear when we type <code>ls</code>, and an output file with the job name and number will appear as well.</p>
+<p>Which will email us when the job starts, and ends. If the email you receive when is ends has <code>Exit_status=0</code>, the code ran successfully, and if it has <code>Exit_status=127</code>, it failed. To see the error message if it fails, type</p>
+<pre class="bash"><code>cat toy_bash_job.o[JOBNUM]</code></pre>
+<p>where <code>toy_bash_job</code> is the name of the job, and <code>[JOBNUM]</code> is the job number the cluster assigns. An example filename might be <code>toy_bash_job.o1234</code>. <code>cat</code> tells the terminal to print the file to the screen.</p>
+<p>If it works, <code>toy_dt.rdata</code> with appear when we type <code>ls</code>, and an output file with the job name and number will appear as well.</p>
 </div>
 <div id="download-the-result" class="section level2">
 <h2>Download the Result</h2>

@@ -144,7 +144,14 @@ We'll now log back into the unity cluster, and run our code with
 qsub demo_pbs.pbs
 ```
 
-Which will email us when the job starts, and ends. If it works, `toy_dt.rdata` with appear when we type `ls`, and an output file with the job name and number will appear as well.
+Which will email us when the job starts, and ends. If the email you receive when is ends has `Exit_status=0`, the code ran successfully, and if it has `Exit_status=127`, it failed.  To see the error message if it fails, type
+
+```{bash check_errors, eval = FALSE}
+cat toy_bash_job.o[JOBNUM]
+```
+where `toy_bash_job` is the name of the job, and `[JOBNUM]` is the job number the cluster assigns. An example filename might be `toy_bash_job.o1234`. `cat` tells the terminal to print the file to the screen.
+
+If it works, `toy_dt.rdata` with appear when we type `ls`, and an output file with the job name and number will appear as well.
 
 ## Download the Result
 
