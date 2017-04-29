@@ -3,6 +3,8 @@ An introduction to R on the Unity HPC cluster at Ohio State
 
 The Unity cluster is free for ASC students at Ohio State, however, many students may have questions about working in an HPC enviroment.  I provide a simple example and documentation to get started with `R` on the unity cluster.
 
+Please let me know if you encounter any bugs in the code.
+
 ## Note
 You will need to change `username.N` to your name.number in the .pbs file, and the bash code in the markdown file.
 
