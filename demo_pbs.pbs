@@ -8,5 +8,6 @@
 
 
 #COMMANDS TO RUN
-ml intel R
+module load intel
+module load R
 Rscript /home/lauretig.1/toy_function.R
