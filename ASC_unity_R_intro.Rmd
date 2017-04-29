@@ -97,12 +97,13 @@ An example batch script would be
 
 
 #COMMANDS TO RUN
-source /opt/intel/bin/compilervars.sh intel64
-/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R
+module load intel/16.0.3 
+module load R/3.3.2 
+~/toy_function.R
 ```
 where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
 
-Under `#COMMANDS TO RUN`, `source /opt/intel/bin/compilervars.sh intel64` calls the necessary intel compiler, and `/usr/local/R/3.3.2/bin/Rscript` is the path for the `Rscript` command, to batch execute the script.  Just using `module load intel R` in the bash script causes the cluster to throw esoteric errors.  Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code.  I recommend the second approach.
+Under `#COMMANDS TO RUN`, `module load intel/16.0.3` calls the necessary intel compiler, and `module load R/3.3.2` is loads `R`, to batch execute the script.  Just using `module load intel R` in the bash script causes the cluster to throw esoteric errors.  Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code.  I recommend the second approach.
 
 To write a `.pbs` file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck "hide extension," uncheck "if no extension is provided use '.txt'," and change the file extension to `.pbs`.
 

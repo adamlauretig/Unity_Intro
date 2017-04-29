@@ -187,10 +187,11 @@ install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; 
 
 
 #COMMANDS TO RUN
-source /opt/intel/bin/compilervars.sh intel64
-/usr/local/R/3.3.2/bin/Rscript ~/toy_function.R</code></pre>
+module load intel/16.0.3 
+module load R/3.3.2 
+~/toy_function.R</code></pre>
 <p>where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
-<p>Under <code>#COMMANDS TO RUN</code>, <code>source /opt/intel/bin/compilervars.sh intel64</code> calls the necessary intel compiler, and <code>/usr/local/R/3.3.2/bin/Rscript</code> is the path for the <code>Rscript</code> command, to batch execute the script. Just using <code>module load intel R</code> in the bash script causes the cluster to throw esoteric errors. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
+<p>Under <code>#COMMANDS TO RUN</code>, <code>module load intel/16.0.3</code> calls the necessary intel compiler, and <code>module load R/3.3.2</code> is loads <code>R</code>, to batch execute the script. Just using <code>module load intel R</code> in the bash script causes the cluster to throw esoteric errors. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
 <p>To write a <code>.pbs</code> file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck “hide extension,” uncheck “if no extension is provided use ‘.txt’,” and change the file extension to <code>.pbs</code>.</p>
 <p>The function we’re testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:</p>
 <pre class="r"><code>library(parallel)
