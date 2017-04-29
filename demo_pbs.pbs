@@ -4,10 +4,10 @@
 #PBS -N toy_bash_job
 #PBS -j oe 
 #PBS -m abe
-#PBS -M lauretig.1@osu.edu
+#PBS -M username.N@osu.edu
 
 
 #COMMANDS TO RUN
 module load intel/16.0.3 
 module load R/3.3.2
-Rscript /home/lauretig.1/toy_function.R
+Rscript /home/username.N/toy_function.R
