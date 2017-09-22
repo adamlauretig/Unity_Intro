@@ -123,7 +123,7 @@ function_out <- mclapply(1:length_of_letters, paste_number_letter,
 toy_dt <- rbindlist(function_out)
 save(toy_dt, file = "~/toy_dt.rdata")
 ```
-where the parallel function supplies the `mclapply` function, for which, we tell it to use three cores, in `mc.cores`.  The file path for loading and saving is just `~/`, since we'll put everything in the same directory.
+where the parallel library supplies the `mclapply` function, for which, we tell it to use three cores, in `mc.cores`.  The file path for loading and saving is just `~/`, since we'll put everything in the same directory.
 
 ## Uploading Files
 
