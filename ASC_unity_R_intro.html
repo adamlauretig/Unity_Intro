@@ -9,9 +9,8 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Adam Lauretig" />
+<meta name="author" content="Adam Lauretig, modified by Hengrui Luo" />
 
-<meta name="date" content="2017-04-28" />
 
 <title>Introduction to R on the ASC Unity Cluster</title>
 
@@ -118,8 +117,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Introduction to R on the ASC Unity Cluster</h1>
-<h4 class="author"><em>Adam Lauretig</em></h4>
-<h4 class="date"><em>April 28, 2017</em></h4>
+<h4 class="author"><em>Adam Lauretig, modified by Hengrui Luo</em></h4>
+<h4 class="date"><em>September 30th, 2017</em></h4>
 
 </div>
 
@@ -189,10 +188,11 @@ install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; 
 #COMMANDS TO RUN
 module load intel/16.0.3 
 module load R/3.3.2 
+#There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
 ~/toy_function.R</code></pre>
-<p>where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
-<p>Under <code>#COMMANDS TO RUN</code>, <code>module load intel/16.0.3</code> calls the necessary intel compiler, and <code>module load R/3.3.2</code> is loads <code>R</code>, to batch execute the script. Just using <code>module load intel R</code> in the bash script causes the cluster to throw esoteric errors. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
-<p>To write a <code>.pbs</code> file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck “hide extension,” uncheck “if no extension is provided use ‘.txt’,” and change the file extension to <code>.pbs</code>.</p>
+<p>where walltime(maximum 2 weeks according to current policy, but may be increased upon request at <a href="https://go.osu.edu/unitysubmit">here</a> ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
+<p>Under <code>#COMMANDS TO RUN</code>, <code>module load intel/16.0.3</code> calls the necessary intel compiler, and <code>module load R/3.3.2</code> is loads <code>R</code>, to batch execute the script. Just using <code>module load intel</code> or <code>module load R</code> in the bash script may load the default version or even causes the cluster to throw esoteric errors. This is because the way unix store the files. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
+<p>To write a <code>.pbs</code> file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck “hide extension,” uncheck “if no extension is provided use ‘.txt’,” and change the file extension to <code>.pbs</code>. To write a <code>.pbs</code> file on a Windows, I recommend Notepad++ (or another plain-text editor), which allows you to save the bash file with <code>.pbs</code> extension and highlights the grammar with plug-ins if wanted.</p>
 <p>The function we’re testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:</p>
 <pre class="r"><code>library(parallel)
 library(data.table)
@@ -205,18 +205,18 @@ function_out &lt;- mclapply(1:length_of_letters, paste_number_letter,
   letter_vector = fake_data, mc.cores = 3)
 toy_dt &lt;- rbindlist(function_out)
 save(toy_dt, file = &quot;~/toy_dt.rdata&quot;)</code></pre>
-<p>where the parallel function supplies the <code>mclapply</code> function, for which, we tell it to use three cores, in <code>mc.cores</code>. The file path for loading and saving is just <code>~/</code>, since we’ll put everything in the same directory.</p>
+<p>where the parallel library supplies the <code>mclapply</code> function, for which, we tell it to use three cores, in <code>mc.cores</code>. The file path for loading and saving is just <code>~/</code>, since we’ll put everything in the same directory.</p>
 </div>
 <div id="uploading-files" class="section level2">
 <h2>Uploading Files</h2>
-<p>To upload our files, we’ll use the <code>scp</code> command in the terminal. This has the format <code>scp [source filepath] [target file path]</code>:</p>
+<p>To upload our files, we’ll use the <code>scp</code>(secure copy) command in the terminal. This has the format <code>scp [source filepath] [target file path]</code>:</p>
 <pre class="bash"><code>scp ~/data/Unity_intro/demo_pbs.pbs username.N@unity.asc.ohio-state.edu:/home/username.N
 
 scp ~/data/Unity_intro/fake_data.rdata username.N@unity.asc.ohio-state.edu:/home/username.N
 
 scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/username.N
 </code></pre>
-<p>where <code>~/data/Unity_intro/</code> is the local path, and <code>username.N@unity.asc.ohio-state.edu:/home/username.N</code> is the path on the cluster.</p>
+<p>where <code>~/data/Unity_intro/</code> is the local path, and <code>username.N@unity.asc.ohio-state.edu:/home/username.N</code> is the path on the cluster. If you are using PuTTy on a windows, the <code>[source filepath]</code> must use “\” or “/” to separate and you will be asked for your username and password on ASC domain. This way is not recommended, a more convenient way of uploading files from local machine to Unity server is to use SHTP/SFTP connection at domain <code>unity.asc.ohio-state.edu</code> (with your username and password on ASC domain) via software like <a href="https://filezilla-project.org/">FileZilla</a>. As far as I tried, <code>pscp</code> is not supported.</p>
 </div>
 <div id="running-batch-code" class="section level2">
 <h2>Running batch code</h2>
@@ -232,7 +232,14 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 <p>To download the result back to your computer, we’ll use <code>scp</code> in reverse</p>
 <pre class="bash"><code>scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
 </code></pre>
-<p>which we can then open in R.</p>
+<p>which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.</p>
+</div>
+<div id="existing-problems" class="section level2">
+<h2>Existing problems</h2>
+<p>The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them. (1) <code>rjags</code> for Gibbs sampler using JAGS may not work due to its author’s comment <a href="https://sourceforge.net/p/mcmc-jags/bugs/38/">here</a>.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><code>Rcpp</code> may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use <code>rm</code> command under (PuTTY) command lines to remove the personal library of <code>Rcpp</code> packages in order to clean the mess.</li>
+</ol>
 </div>
 
 
@@ -258,7 +265,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
