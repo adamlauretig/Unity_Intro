@@ -168,8 +168,33 @@ scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Uni
 ```
 which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.
 
+## Performance comparison
+
+For example, if we run the bootstrapping estimation of variance of linear coefficient estimator, then the efficiency of bootstrapping will be greatly improved even if we do NOT implement any parallel coding.
+
+If you increase the bootstrapping sample size(`bootstrap_size` in `parallel_bootstrap.R`), such a difference in execution time will be more obvious.
+```{r, eval=FALSE}
+On a 8-core personal machine:
+Usual bootstrapping yields
+   user  system elapsed 
+    2.7     0.0     2.7 
+Parallel bootstrapping yields
+   user  system elapsed 
+   0.57    0.20    1.96 
+```
+Comparatively, on a 24-core ASC Unity node, the performance is greatly improved by a large margin:
+```{r, eval=FALSE}
+Usual bootstrapping yields
+   user  system elapsed
+  1.199   0.042   1.242
+Parallel bootstrapping yields
+   user  system elapsed
+  2.348   0.822   0.417
+```
+
 ## Existing problems
 The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
+
 (1) `rjags` for Gibbs sampler using JAGS may not work due to its author's comment [here](https://sourceforge.net/p/mcmc-jags/bugs/38/).
 
 (2) `Rcpp` may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use `rm` command under (PuTTY) command lines to remove the personal library of `Rcpp` packages in order to clean the mess.
