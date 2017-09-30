@@ -141,7 +141,7 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 
 ```
 where `~/data/Unity_intro/` is the local path, and `username.N@unity.asc.ohio-state.edu:/home/username.N` is the path on the cluster.
-If you are using PuTTy on a windows, the `[source filepath]` must use "\\" or "/" to separate and you will be asked for your username and password on ASC domain. This way is not recommended, a more convenient way of uploading files from local machine to Unity server is to use SHTP/SFTP connection at domain `unity.asc.ohio-state.edu` (with your username and password on ASC domain) via software like [FileZilla](https://filezilla-project.org/). As far as I tried, `pscp` is not supported.
+If you are using PuTTy on a windows, the `[source filepath]` must use "\\" or "/" to separate and you will be asked for your username and password on ASC domain. However, a more convenient way of uploading files from a local machine to Unity server is to use the SHTP/SFTP connection at `unity.asc.ohio-state.edu` domain (with your username and password on ASC domain) via software like [FileZilla](https://filezilla-project.org/). As far as I have tried, `pscp` is not supported.
 
 ## Running batch code
 
@@ -166,10 +166,10 @@ To download the result back to your computer, we'll use `scp` in reverse
 scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
 
 ```
-which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.
+which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in Windows.
 
 ## Existing problems
-The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
+The current configuration of unity cluster does not allow a local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
 (1) `rjags` for Gibbs sampler using JAGS may not work due to its author's comment [here](https://sourceforge.net/p/mcmc-jags/bugs/38/).
 
 (2) `Rcpp` may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use `rm` command under (PuTTY) command lines to remove the personal library of `Rcpp` packages in order to clean the mess.
