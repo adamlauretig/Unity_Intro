@@ -1,7 +1,7 @@
 ---
 title: "Introduction to R on the ASC Unity Cluster"
-author: "Adam Lauretig"
-date: "April 28, 2017"
+author: "Adam Lauretig, modified by Hengrui Luo"
+date: "September 30th, 2017"
 output:
   word_document: default
   html_document: default
@@ -101,13 +101,16 @@ An example batch script would be
 #COMMANDS TO RUN
 module load intel/16.0.3 
 module load R/3.3.2 
+#There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
 ~/toy_function.R
 ```
-where walltime is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
+where walltime(maximum 2 weeks according to current policy, but may be increased upon request at [here](https://go.osu.edu/unitysubmit) ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
 
-Under `#COMMANDS TO RUN`, `module load intel/16.0.3` calls the necessary intel compiler, and `module load R/3.3.2` is loads `R`, to batch execute the script.  Just using `module load intel R` in the bash script causes the cluster to throw esoteric errors.  Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code.  I recommend the second approach.
+Under `#COMMANDS TO RUN`, `module load intel/16.0.3` calls the necessary intel compiler, and `module load R/3.3.2` is loads `R`, to batch execute the script.  Just using `module load intel` or `module load R` in the bash script may load the default version or even causes the cluster to throw esoteric errors. This is because the way unix store the files.
+Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code.  I recommend the second approach.
 
 To write a `.pbs` file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck "hide extension," uncheck "if no extension is provided use '.txt'," and change the file extension to `.pbs`.
+To write a `.pbs` file on a Windows, I recommend Notepad++ (or another plain-text editor), which allows you to save the bash file with `.pbs` extension and highlights the grammar with plug-ins if wanted.
 
 The function we're testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:
 ```{r toy_function, eval = FALSE}
@@ -127,7 +130,7 @@ where the parallel library supplies the `mclapply` function, for which, we tell 
 
 ## Uploading Files
 
-To upload our files, we'll use the `scp` command in the terminal. This has the format `scp [source filepath] [target file path]`:
+To upload our files, we'll use the `scp`(secure copy) command in the terminal. This has the format `scp [source filepath] [target file path]`:
 
 ```{bash scp_example, eval = FALSE}
 scp ~/data/Unity_intro/demo_pbs.pbs username.N@unity.asc.ohio-state.edu:/home/username.N
@@ -138,6 +141,7 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 
 ```
 where `~/data/Unity_intro/` is the local path, and `username.N@unity.asc.ohio-state.edu:/home/username.N` is the path on the cluster.
+If you are using PuTTy on a windows, the `[source filepath]` must use "\\" or "/" to separate and you will be asked for your username and password on ASC domain. This way is not recommended, a more convenient way of uploading files from local machine to Unity server is to use SHTP/SFTP connection at domain `unity.asc.ohio-state.edu` (with your username and password on ASC domain) via software like [FileZilla](https://filezilla-project.org/). As far as I tried, `pscp` is not supported.
 
 ## Running batch code
 
@@ -162,5 +166,10 @@ To download the result back to your computer, we'll use `scp` in reverse
 scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
 
 ```
-which we can then open in R.
+which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.
 
+## Existing problems
+The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
+(1) `rjags` for Gibbs sampler using JAGS may not work due to its author's comment [here](https://sourceforge.net/p/mcmc-jags/bugs/38/).
+
+(2) `Rcpp` may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use `rm` command under (PuTTY) command lines to remove the personal library of `Rcpp` packages in order to clean the mess.
