@@ -3,8 +3,8 @@ title: "Introduction to R on the ASC Unity Cluster"
 author: "Adam Lauretig, modified by Hengrui Luo"
 date: "September 30th, 2017"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ## ASC Unity Cluster
