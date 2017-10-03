@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Adam Lauretig, modified by Hengrui Luo" />
+<meta name="author" content="Adam Lauretig" />
 
 
 <title>Introduction to R on the ASC Unity Cluster</title>
@@ -117,8 +117,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Introduction to R on the ASC Unity Cluster</h1>
-<h4 class="author"><em>Adam Lauretig, modified by Hengrui Luo</em></h4>
-<h4 class="date"><em>September 30th, 2017</em></h4>
+<h4 class="author"><em>Adam Lauretig</em></h4>
 
 </div>
 
@@ -161,11 +160,7 @@ or submit request to: http://go.osu.edu/unitysubmit
 <pre class="bash"><code>R</code></pre>
 <p>which will open an R command line, from where you can, for example, install packages. To see the currently installed packages, type:</p>
 <pre class="r"><code>installed.packages()</code></pre>
-<p>which will generate a reasonably long list of installed packages. While we’re here, let’s install data.table and parallel, since we’ll be using them later:</p>
-<pre class="r"><code>install.packages(&quot;data.table&quot;, repos = &quot;http://cran.case.edu&quot; )
-install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; )</code></pre>
-<p>This will take a few seconds, and then, you can load the data.table library, which should work:</p>
-<pre class="r"><code>library(data.table)</code></pre>
+<p>which will generate a reasonably long list of installed packages. This is not the preferred way to interact with R, you should batch-schedule your jobs, so that the system can find the optimal time for your job.</p>
 <p>This is all we’ll need for now, so quit R, and don’t save the workspace image:</p>
 <pre class="r"><code>q()</code></pre>
 <p>Now, log out of the unity environment, and type:</p>
@@ -178,7 +173,7 @@ install.packages(&quot;parallel&quot;, repos = &quot;http://cran.case.edu&quot; 
 <p>An example batch script would be</p>
 <pre class="bash"><code>#!/bin/bash
 #PBS -l walltime=00:10:00
-#PBS -l nodes=1:ppn=3
+#PBS -l nodes=1:ppn=3, mem =3 GB
 #PBS -N toy_bash_job
 #PBS -j oe 
 #PBS -m abe
@@ -190,11 +185,15 @@ module load intel/16.0.3
 module load R/3.3.2 
 #There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
 ~/toy_function.R</code></pre>
-<p>where walltime(maximum 2 weeks according to current policy, but may be increased upon request at <a href="https://go.osu.edu/unitysubmit">here</a> ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
+<p>where walltime (maximum 2 weeks according to current policy, but may be increased upon request at <a href="https://go.osu.edu/unitysubmit">here</a> ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), mem is the amount of memory you’ll need, <code>-N</code> is the name of the job, <code>-j oe</code> writes errors to standard output, <code>-m abe</code> tells the cluster to email you (abort, begin, end), and <code>-M</code> is the address to email you.</p>
 <p>Under <code>#COMMANDS TO RUN</code>, <code>module load intel/16.0.3</code> calls the necessary intel compiler, and <code>module load R/3.3.2</code> is loads <code>R</code>, to batch execute the script. Just using <code>module load intel</code> or <code>module load R</code> in the bash script may load the default version or even causes the cluster to throw esoteric errors. This is because the way unix store the files. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.</p>
 <p>To write a <code>.pbs</code> file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck “hide extension,” uncheck “if no extension is provided use ‘.txt’,” and change the file extension to <code>.pbs</code>. To write a <code>.pbs</code> file on a Windows, I recommend Notepad++ (or another plain-text editor), which allows you to save the bash file with <code>.pbs</code> extension and highlights the grammar with plug-ins if wanted.</p>
 <p>The function we’re testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:</p>
-<pre class="r"><code>library(parallel)
+<pre class="r"><code># if you need to install a package, it can be helpful to put the install 
+# command in your script itself, ie: 
+# install.packages(&quot;parallel&quot;, repos = &quot;https://cloud.r-project.org/&quot;)
+# install.packages(&quot;data.table&quot;, repos = &quot;https://cloud.r-project.org/&quot;)
+library(parallel)
 library(data.table)
 load(&quot;~/fake_data.rdata&quot;) # note that we're using short filepaths
 paste_number_letter &lt;- function(i = NULL, letter_vector = NULL){
@@ -216,7 +215,7 @@ scp ~/data/Unity_intro/fake_data.rdata username.N@unity.asc.ohio-state.edu:/home
 
 scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/username.N
 </code></pre>
-<p>where <code>~/data/Unity_intro/</code> is the local path, and <code>username.N@unity.asc.ohio-state.edu:/home/username.N</code> is the path on the cluster. If you are using PuTTy on a windows, the <code>[source filepath]</code> must use “\” or “/” to separate and you will be asked for your username and password on ASC domain. This way is not recommended, a more convenient way of uploading files from local machine to Unity server is to use SHTP/SFTP connection at domain <code>unity.asc.ohio-state.edu</code> (with your username and password on ASC domain) via software like <a href="https://filezilla-project.org/">FileZilla</a>. As far as I tried, <code>pscp</code> is not supported.</p>
+<p>where <code>~/data/Unity_intro/</code> is the local path, and <code>username.N@unity.asc.ohio-state.edu:/home/username.N</code> is the path on the cluster. If you are using PuTTy on a windows, the <code>[source filepath]</code> must use “\” or “/” to separate and you will be asked for your username and password on ASC domain. However, a more convenient way of uploading files from a local machine to Unity server is to use the SHTP/SFTP connection at <code>unity.asc.ohio-state.edu</code> domain (with your username and password on ASC domain) via software like <a href="https://filezilla-project.org/">FileZilla</a>. As far as I have tried, <code>pscp</code> is not supported.</p>
 </div>
 <div id="running-batch-code" class="section level2">
 <h2>Running batch code</h2>
@@ -232,10 +231,12 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 <p>To download the result back to your computer, we’ll use <code>scp</code> in reverse</p>
 <pre class="bash"><code>scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
 </code></pre>
-<p>which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.</p>
+<p>which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in Windows.</p>
 </div>
 <div id="performance-comparison" class="section level2">
 <h2>Performance comparison</h2>
+<div id="courtesy-of-hengrui-luo" class="section level3">
+<h3>(Courtesy of Hengrui Luo)</h3>
 <p>For example, if we run the bootstrapping estimation of variance of linear coefficient estimator, then the efficiency of bootstrapping will be greatly improved even if we do NOT implement any parallel coding.</p>
 <p>If you increase the bootstrapping sample size(<code>bootstrap_size</code> in <code>parallel_bootstrap.R</code>), such a difference in execution time will be more obvious.</p>
 <pre class="r"><code>On a 8-core personal machine:
@@ -253,9 +254,10 @@ Parallel bootstrapping yields
    user  system elapsed
   2.348   0.822   0.417</code></pre>
 </div>
+</div>
 <div id="existing-problems" class="section level2">
 <h2>Existing problems</h2>
-<p>The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.</p>
+<p>The current configuration of unity cluster does not allow a local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.</p>
 <ol style="list-style-type: decimal">
 <li><p><code>rjags</code> for Gibbs sampler using JAGS may not work due to its author’s comment <a href="https://sourceforge.net/p/mcmc-jags/bugs/38/">here</a>.</p></li>
 <li><p><code>Rcpp</code> may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use <code>rm</code> command under (PuTTY) command lines to remove the personal library of <code>Rcpp</code> packages in order to clean the mess.</p></li>

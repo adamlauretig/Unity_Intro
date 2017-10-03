@@ -1,7 +1,7 @@
 ---
 title: "Introduction to R on the ASC Unity Cluster"
-author: "Adam Lauretig, modified by Hengrui Luo"
-date: "September 30th, 2017"
+author: "Adam Lauretig"
+date: \today
 output:
   html_document: default
   word_document: default
@@ -62,16 +62,8 @@ which will open an R command line, from where you can, for example, install pack
 ```{r, eval = FALSE}
 installed.packages()
 ```
-which will generate a reasonably long list of installed packages.  While we're here, let's install data.table and parallel, since we'll be using them later:
-```{r, eval = FALSE}
-install.packages("data.table", repos = "http://cran.case.edu" )
-install.packages("parallel", repos = "http://cran.case.edu" )
+which will generate a reasonably long list of installed packages.  This is not the preferred way to interact with R, you should batch-schedule your jobs, so that the system can find the optimal time for your job.
 
-```
-This will take a few seconds, and then, you can load the data.table library, which should work:
-```{r, eval = FALSE}
-library(data.table)
-```
 This is all we'll need for now, so quit R, and don't save the workspace image:
 ```{r, eval = FALSE}
 q()
@@ -91,7 +83,7 @@ An example batch script would be
 ```{bash pbs_file, eval=FALSE}
 #!/bin/bash
 #PBS -l walltime=00:10:00
-#PBS -l nodes=1:ppn=3
+#PBS -l nodes=1:ppn=3, mem =3 GB
 #PBS -N toy_bash_job
 #PBS -j oe 
 #PBS -m abe
@@ -104,7 +96,7 @@ module load R/3.3.2
 #There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
 ~/toy_function.R
 ```
-where walltime(maximum 2 weeks according to current policy, but may be increased upon request at [here](https://go.osu.edu/unitysubmit) ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
+where walltime (maximum 2 weeks according to current policy, but may be increased upon request at [here](https://go.osu.edu/unitysubmit) ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), mem is the amount of memory you'll need, `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
 
 Under `#COMMANDS TO RUN`, `module load intel/16.0.3` calls the necessary intel compiler, and `module load R/3.3.2` is loads `R`, to batch execute the script.  Just using `module load intel` or `module load R` in the bash script may load the default version or even causes the cluster to throw esoteric errors. This is because the way unix store the files.
 Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code.  I recommend the second approach.
@@ -114,6 +106,10 @@ To write a `.pbs` file on a Windows, I recommend Notepad++ (or another plain-tex
 
 The function we're testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:
 ```{r toy_function, eval = FALSE}
+# if you need to install a package, it can be helpful to put the install 
+# command in your script itself, ie: 
+# install.packages("parallel", repos = "https://cloud.r-project.org/")
+# install.packages("data.table", repos = "https://cloud.r-project.org/")
 library(parallel)
 library(data.table)
 load("~/fake_data.rdata") # note that we're using short filepaths
@@ -170,6 +166,8 @@ which we can then open in R. Again you can download the result from the SHTP/SFT
 
 ## Performance comparison
 
+### (Courtesy of Hengrui Luo)
+
 For example, if we run the bootstrapping estimation of variance of linear coefficient estimator, then the efficiency of bootstrapping will be greatly improved even if we do NOT implement any parallel coding.
 
 If you increase the bootstrapping sample size(`bootstrap_size` in `parallel_bootstrap.R`), such a difference in execution time will be more obvious.
@@ -194,6 +192,7 @@ Parallel bootstrapping yields
 
 ## Existing problems
 The current configuration of unity cluster does not allow a local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
+
 (1) `rjags` for Gibbs sampler using JAGS may not work due to its author's comment [here](https://sourceforge.net/p/mcmc-jags/bugs/38/).
 
 (2) `Rcpp` may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use `rm` command under (PuTTY) command lines to remove the personal library of `Rcpp` packages in order to clean the mess.
