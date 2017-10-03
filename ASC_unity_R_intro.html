@@ -234,11 +234,31 @@ scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/
 </code></pre>
 <p>which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in windows.</p>
 </div>
+<div id="performance-comparison" class="section level2">
+<h2>Performance comparison</h2>
+<p>For example, if we run the bootstrapping estimation of variance of linear coefficient estimator, then the efficiency of bootstrapping will be greatly improved even if we do NOT implement any parallel coding.</p>
+<p>If you increase the bootstrapping sample size(<code>bootstrap_size</code> in <code>parallel_bootstrap.R</code>), such a difference in execution time will be more obvious.</p>
+<pre class="r"><code>On a 8-core personal machine:
+Usual bootstrapping yields
+   user  system elapsed 
+    2.7     0.0     2.7 
+Parallel bootstrapping yields
+   user  system elapsed 
+   0.57    0.20    1.96 </code></pre>
+<p>Comparatively, on a 24-core ASC Unity node, the performance is greatly improved by a large margin:</p>
+<pre class="r"><code>Usual bootstrapping yields
+   user  system elapsed
+  1.199   0.042   1.242
+Parallel bootstrapping yields
+   user  system elapsed
+  2.348   0.822   0.417</code></pre>
+</div>
 <div id="existing-problems" class="section level2">
 <h2>Existing problems</h2>
-<p>The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them. (1) <code>rjags</code> for Gibbs sampler using JAGS may not work due to its author’s comment <a href="https://sourceforge.net/p/mcmc-jags/bugs/38/">here</a>.</p>
-<ol start="2" style="list-style-type: decimal">
-<li><code>Rcpp</code> may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use <code>rm</code> command under (PuTTY) command lines to remove the personal library of <code>Rcpp</code> packages in order to clean the mess.</li>
+<p>The current configuration of unity cluster does not allow local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.</p>
+<ol style="list-style-type: decimal">
+<li><p><code>rjags</code> for Gibbs sampler using JAGS may not work due to its author’s comment <a href="https://sourceforge.net/p/mcmc-jags/bugs/38/">here</a>.</p></li>
+<li><p><code>Rcpp</code> may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use <code>rm</code> command under (PuTTY) command lines to remove the personal library of <code>Rcpp</code> packages in order to clean the mess.</p></li>
 </ol>
 </div>
 
