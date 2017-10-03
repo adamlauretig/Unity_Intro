@@ -16,4 +16,4 @@ Please let me know if you encounter any bugs in the code.
 You will need to change `username.N` to your name.number in the both `.pbs` file, and the command line `scp` code in the markdown file.
 
 ## Acknowledgements
-Many thanks to [Henry Law](https://github.com/hrluo) for the parallel bootstrap example, and for extending the discussion on using Windows.
+Many thanks to [Hengrui Luo](https://github.com/hrluo) for the parallel bootstrap example, and for extending the discussion on using Windows.
