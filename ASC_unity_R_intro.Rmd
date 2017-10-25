@@ -94,7 +94,7 @@ An example batch script would be
 module load intel/16.0.3 
 module load R/3.3.2 
 #There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
-~/toy_function.R
+Rscript ~/toy_function.R
 ```
 where walltime (maximum 2 weeks according to current policy, but may be increased upon request at [here](https://go.osu.edu/unitysubmit) ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), mem is the amount of memory you'll need, `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.  
 
