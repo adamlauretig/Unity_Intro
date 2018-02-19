@@ -52,7 +52,8 @@ module avail
 
 and to load the R module, type:
 ```{bash, eval = FALSE}
-module load intel R
+module load intel/16.0.3 
+module load R/3.4.2
 ```
 since, R depends on the intel module. To open R, type
 ```{bash, eval = FALSE}
@@ -92,7 +93,7 @@ An example batch script would be
 
 #COMMANDS TO RUN
 module load intel/16.0.3 
-module load R/3.3.2 
+module load R/3.4.2 
 #There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
 Rscript ~/toy_function.R
 ```
