@@ -1,0 +1,222 @@
+Introduction to R on the ASC Unity Cluster
+================
+Adam Lauretig
+
+ASC Unity Cluster
+-----------------
+
+Ohio State ASC tech has recent made the [Unity high-performance](https://osuasc.teamdynamix.com/TDClient/KB/?CategoryID=4582 "Unity") cluster available to everyone, with up to 24 cores available for your high performance computing needs. However, access the cluster and running R code in it can be confusing for those not familiar with unix systems. To spare you 3 days of beating your head against the wall and cursing the unix gods, I've put together the following introduction to using R on the unix cluster. In this document, I will: introduce the basics of interacting with Unity; illustrate how to load packages in the Unity environment; discuss how to write the bash files for running code to take advantage of the parallel environment; and demonstrate how to upload a file, run a batch R script, and download the results.
+
+Connecting to the Unity cluster
+-------------------------------
+
+On a Mac, to connect to the Unity cluster, open the terminal, and type:
+
+``` bash
+ssh -l username.N unity.asc.ohio-state.edu
+```
+
+where username.N is your Ohio State name.number. You'll be prompted for your OSU password, which you should enter. If you're on a Windows computer, you'll use PuTTy to connect to the Unity cluster. If you log in, you will see the following:
+
+``` bash
+-----------------------------------------
+Welcome to Unity.
+
+This is a college-wide resource managed by ASCTech
+
+Information on how to use the Unity Cluster:
+http://go.osu.edu/unityhelp
+
+For assistance please email asctech@osu.edu
+or submit request to: http://go.osu.edu/unitysubmit
+-----------------------------------------
+
+
+[username.N@unity-1 ~]$ 
+```
+
+In the Unity Environment
+------------------------
+
+To list the current contents of your working directory, type:
+
+``` bash
+ls
+```
+
+at the prompt. We then want to know which softwares we can use, which are in *modules*. To see the modules available, type:
+
+``` bash
+module avail
+```
+
+and to load the R module, type:
+
+``` bash
+module load intel/16.0.3 
+module load R/3.4.2
+```
+
+since, R depends on the intel module. To open R, type
+
+``` bash
+R
+```
+
+which will open an R command line, from where you can, for example, install packages. To see the currently installed packages, type:
+
+``` r
+installed.packages()
+```
+
+which will generate a reasonably long list of installed packages. This is not the preferred way to interact with R, you should batch-schedule your jobs, so that the system can find the optimal time for your job.
+
+This is all we'll need for now, so quit R, and don't save the workspace image:
+
+``` r
+q()
+```
+
+Now, log out of the unity environment, and type:
+
+``` bash
+logout
+```
+
+which will return your terminal to the original directory. Log out now, we'll set up our code on the local computer, and then send it to the cluster for batch processing.
+
+Setting up Code to run in a batch setting
+-----------------------------------------
+
+I've provided some sample data, and a sample script (`fake_data.rdata`, and `toy_function.R` respectively), which paste a number and letter together and save them to a data frame. To run this as a batch process, where we take advantage of the parallel computing possibilities we will need to write a `.pbs` file to schedule our job on the cluster, more details [here](https://osuasc.teamdynamix.com/TDClient/KB/ArticleDet?ID=23180 "Unity cluster") and [here](https://www.osc.edu/content/batch-tutorial "OSC tutorial").
+
+An example batch script would be
+
+``` bash
+#!/bin/bash
+#PBS -l walltime=00:10:00
+#PBS -l nodes=1:ppn=3,mem=3GB
+#PBS -N toy_bash_job
+#PBS -j oe 
+#PBS -m abe
+#PBS -M username.N@osu.edu
+
+
+#COMMANDS TO RUN
+module load intel/16.0.3 
+module load R/3.4.2 
+#There are multiple versions of R and do check whether the version of R is compatible with the code you are going to execute.
+Rscript ~/toy_function.R
+```
+
+where walltime (maximum 2 weeks according to current policy, but may be increased upon request at [here](https://go.osu.edu/unitysubmit) ) is the amount of time you expect to use, nodes and ppn are the number of cores (2 each with 12 possible cores), mem is the amount of memory you'll need, `-N` is the name of the job, `-j oe` writes errors to standard output, `-m abe` tells the cluster to email you (abort, begin, end), and `-M` is the address to email you.
+
+Under `#COMMANDS TO RUN`, `module load intel/16.0.3` calls the necessary intel compiler, and `module load R/3.3.2` is loads `R`, to batch execute the script. Just using `module load intel` or `module load R` in the bash script may load the default version or even causes the cluster to throw esoteric errors. This is because the way unix store the files. Either one can learn a great deal about unix file structures to solve this problem, or copy and paste the above code. I recommend the second approach.
+
+To write a `.pbs` file on a Mac, open textedit (or another plain-text editor), write the commands for your bash file, uncheck "hide extension," uncheck "if no extension is provided use '.txt'," and change the file extension to `.pbs`. To write a `.pbs` file on a Windows, I recommend Notepad++ (or another plain-text editor), which allows you to save the bash file with `.pbs` extension and highlights the grammar with plug-ins if wanted.
+
+The function we're testing is simple: given 10000 letters, paste its location in a list, and underscore, and then the letter, and output a data.table. The setup looks like this:
+
+``` r
+# if you need to install a package, it can be helpful to put the install 
+# command in your script itself, ie: 
+# install.packages("parallel", repos = "https://cloud.r-project.org/")
+# install.packages("data.table", repos = "https://cloud.r-project.org/")
+library(parallel)
+library(data.table)
+load("~/fake_data.rdata") # note that we're using short filepaths
+paste_number_letter <- function(i = NULL, letter_vector = NULL){
+  data.table(paste0(letter_vector[i], "_", i))
+}
+length_of_letters <- length(fake_data)
+function_out <- mclapply(1:length_of_letters, paste_number_letter, 
+  letter_vector = fake_data, mc.cores = 3)
+toy_dt <- rbindlist(function_out)
+save(toy_dt, file = "~/toy_dt.rdata")
+```
+
+where the parallel library supplies the `mclapply` function, for which, we tell it to use three cores, in `mc.cores`. The file path for loading and saving is just `~/`, since we'll put everything in the same directory.
+
+Uploading Files
+---------------
+
+To upload our files, we'll use the `scp`(secure copy) command in the terminal. This has the format `scp [source filepath] [target file path]`:
+
+``` bash
+scp ~/data/Unity_intro/demo_pbs.pbs username.N@unity.asc.ohio-state.edu:/home/username.N
+
+scp ~/data/Unity_intro/fake_data.rdata username.N@unity.asc.ohio-state.edu:/home/username.N
+
+scp ~/data/Unity_intro/toy_function.R username.N@unity.asc.ohio-state.edu:/home/username.N
+```
+
+where `~/data/Unity_intro/` is the local path, and `username.N@unity.asc.ohio-state.edu:/home/username.N` is the path on the cluster. If you are using PuTTy on a windows, the `[source filepath]` must use "\\" or "/" to separate and you will be asked for your username and password on ASC domain. However, a more convenient way of uploading files from a local machine to Unity server is to use the SHTP/SFTP connection at `unity.asc.ohio-state.edu` domain (with your username and password on ASC domain) via software like [FileZilla](https://filezilla-project.org/). As far as I have tried, `pscp` is not supported.
+
+Running batch code
+------------------
+
+We'll now log back into the unity cluster, and run our code with
+
+``` bash
+qsub demo_pbs.pbs
+```
+
+Which will email us when the job starts, and ends. If the email you receive when is ends has `Exit_status=0`, the code ran successfully, and if it has `Exit_status=127`, it failed. To see the error message if it fails, type
+
+``` bash
+cat toy_bash_job.o[JOBNUM]
+```
+
+where `toy_bash_job` is the name of the job, and `[JOBNUM]` is the job number the cluster assigns. An example filename might be `toy_bash_job.o1234`. `cat` tells the terminal to print the file to the screen.
+
+If it works, `toy_dt.rdata` with appear when we type `ls`, and an output file with the job name and number will appear as well.
+
+Download the Result
+-------------------
+
+To download the result back to your computer, we'll use `scp` in reverse
+
+``` bash
+scp username.N@unity.asc.ohio-state.edu:/home/username.N/toy_dt.rdata ~/data/Unity_intro/ 
+```
+
+which we can then open in R. Again you can download the result from the SHTP/SFTP connection if you are using a client like FileZilla, which is preferable in Windows.
+
+Performance comparison
+----------------------
+
+### (Courtesy of Hengrui Luo)
+
+For example, if we run the bootstrapping estimation of variance of linear coefficient estimator, then the efficiency of bootstrapping will be greatly improved even if we do NOT implement any parallel coding.
+
+If you increase the bootstrapping sample size(`bootstrap_size` in `parallel_bootstrap.R`), such a difference in execution time will be more obvious.
+
+``` r
+On a 8-core personal machine:
+Usual bootstrapping yields
+   user  system elapsed 
+    2.7     0.0     2.7 
+Parallel bootstrapping yields
+   user  system elapsed 
+   0.57    0.20    1.96 
+```
+
+Comparatively, on a 24-core ASC Unity node, the performance is greatly improved by a large margin:
+
+``` r
+Usual bootstrapping yields
+   user  system elapsed
+  1.199   0.042   1.242
+Parallel bootstrapping yields
+   user  system elapsed
+  2.348   0.822   0.417
+```
+
+Existing problems
+-----------------
+
+The current configuration of unity cluster does not allow a local R library but ask you to install all packages to personal library. This causes a lot of problems, I would like to point out two of them.
+
+1.  `rjags` for Gibbs sampler using JAGS may not work due to its author's comment [here](https://sourceforge.net/p/mcmc-jags/bugs/38/).
+
+2.  `Rcpp` may cause a lot of problems including failure of compilation of code and other issues. To resolve the problem, use `rm` command under (PuTTY) command lines to remove the personal library of `Rcpp` packages in order to clean the mess.

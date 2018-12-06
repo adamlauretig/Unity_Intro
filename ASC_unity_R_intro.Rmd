@@ -2,9 +2,7 @@
 title: "Introduction to R on the ASC Unity Cluster"
 author: "Adam Lauretig"
 date: \today
-output:
-  html_document: default
-  word_document: default
+output: github_document
 ---
 
 ## ASC Unity Cluster
