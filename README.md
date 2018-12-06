@@ -6,7 +6,7 @@ The Unity cluster is free for ASC students at Ohio State, however, many students
 Please let me know if you encounter any bugs in the code.
 
 # Contents
-1. `ASC_unity_R_intro.Rmd`: The R markdown file describing everything to run the tutorial, and commands to use.
+1. `ASC_unity_R_intro.md`: The R markdown file describing everything to run the tutorial, and commands to use.
 2. `fake_data.rdata`: The simulated data for the demostration.
 3. `generate_fake_data.R`: The script used to simulate the fake data.
 4. `toy_function.R`: The `R` function to run on the cluster.
